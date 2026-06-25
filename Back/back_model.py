@@ -47,7 +47,7 @@ async def read_workout_record():
 # get - 정보를 '읽어올때만'
 @app.get('/record')
 async def read_record():    
-    return('data', all_records)
+    return {'data' : all_records}
 
 # post - 정보를 새로 입력할 때
 @app.post('/record')
@@ -56,4 +56,5 @@ async def create_record(personal_info:HealthRecord):
     #.model_dump() -> 기록을 저장하기 위해 딕셔너리 형태로 추출해줌
     new_data = personal_info.model_dump()
     all_records.append(new_data)    
-    return {'message' : f'데이터가 성공적으로 처리되었습니다!'}
+    return {'message' : f'''{personal_info.user_id}님의 데이터가 성공적으로 처리되었습니다.''',
+        'total_record' : f'전체 회원 수 : {len(all_records)}'}
