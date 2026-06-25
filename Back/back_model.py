@@ -4,6 +4,9 @@ from pydantic import BaseModel, Field
 
 app = FastAPI()
 
+all_records = []
+all_workout = {}
+
 # 모델을 활용해서 데이터의 송수신을 규격화
 # 서비스 에러가 줄어듬
 
@@ -13,40 +16,38 @@ class HealthRecord(BaseModel):
     weight : int
     workout : bool
 
-all_records = []
-workout_records = []
-
-#베이스 모델 만들기
-#운동에 대한 정보 모델 만들기
+# 베이스 모델 만들기
+# 운동에 대한 정보 모델 만들기
 class WorkoutInfo(BaseModel):
-    #운동종류(str)
-    type : str
-    #운동횟수(int)
-    count : int
-    #운동강도(1~10까지의int)
-    intense : int = Field(...,min_length=1, max_length=10)
-    
-#함수 만들기
-#운동 기록이 저장되어야 함
-@app.post('/workdout/{user_id}')
-async def record_daily(workout:WorkoutInfo):
-    
-    health_info = workout.model_dump()
-    workout_records.append(health_info)
-    return 
 
-    
-    
+    wokind: str = Field(description='운동 종류를 의미함, 스쿼트, 헬스, 유산소 등..') # 운동종류(str)
+    wocount: int  = Field(description='운동 횟수를 의미함. 얼마나 오랫동안 했는지') # 운동횟수(int)
+    wointensity: int = Field(ge=1, le=10, description='얼마나 강한 운동했는지, 1에서 10까지로 직접 표현')  # 운동강도(1~10까지의int)
+
+# 함수 만들기
+# -> get() 정보 출력
+# -> post()
+
+# 운동 기록이 저장되어야 함
+@app.post('/workout/{user_id}')
+async def record_daily(user_id:str, workout:WorkoutInfo):
+    workout_data = workout.model_dump()
+    all_workout[user_id] = workout_data
+    return {'message' : f'{user_id} 회원님의 운동 기록이 처리되었습니다.',
+            'saved_data' : workout_data}
+
+@app.get('/workout')
+async def read_workout_record():
+    return {'data' : all_workout}
+
 # class PersonalInfo()
 # api 설계 -> 어떤 주소 app.get(주소1), app.post(주소2) -> 주소 정의
 # api 설계2 -> 어떤 데이터? app.get(주소1) : 개인정보
 
 # get - 정보를 '읽어올때만'
 @app.get('/record')
-async def read_record():
-    
+async def read_record():    
     return('data', all_records)
-
 
 # post - 정보를 새로 입력할 때
 @app.post('/record')
@@ -54,6 +55,5 @@ async def create_record(personal_info:HealthRecord):
     #기록이 들어오면 기록을 저장
     #.model_dump() -> 기록을 저장하기 위해 딕셔너리 형태로 추출해줌
     new_data = personal_info.model_dump()
-    all_records.append(new_data)
-    
+    all_records.append(new_data)    
     return {'message' : f'데이터가 성공적으로 처리되었습니다!'}
