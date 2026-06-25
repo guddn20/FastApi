@@ -34,29 +34,43 @@ def print_personal_info(base_url):
 # 3. 운동정보등록
 def register_workout_record(base_url):
     print('회원님의 운동 정보 등록을 시작합니다.')
-    #어떤 유저가 기록했는지 알기 위해서 아이디를 물어봄
+    # 어떤 유저가 기록했는지 알기 위해서 아이디를 물어봄
     #'유저' 기록 로그인이 된 상태에서 '세션' 저장
     user_id = str(input("아이디를 입력해주세요. : \n"))
     wokind = str(input("오늘 한 운동의 종류는 무엇입니까? : \n"))
     wocount = int(input("운동을 몇개나/얼마나 오래 하셨습니까? : \n"))
     wointensity = int(input("운동 강도를 1에서 10 사이의 숫자로 표현해주세요. : \n"))
 
-    workout_info = {
+    data = {
                     'wokind' : wokind,
                     'wocount' : wocount,
                     'wointensity' : wointensity
                     }   
-    response = requests.post(f'{base_url}/workout/{user_id}', json=workout_info)
+
+    response = requests.post(f"{base_url}/workout/{user_id}", json=data)
+
     if response.status_code == 200:
         print(f"{user_id} 회원님의 운동 기록 정보가 성공적으로 등록되었습니다!")
     else:
+        #422 에러 -> 입력 형식이 지정해놓은 타입과 맞지 않은 경우
+        #404 에러 -> 경로 잘못된 경우
         print(f"등록 실패! 카운터에 문의하세요. {response.status_code}")
 
 # 4. 운동정보조회(관리자)
 def print_workout_record(base_url):
-    response = requests.get(f"{base_url}/workout")
-    if response.status_code == 200:
-        print(f"운동 기록을 열람합니다. {response.json().get('data')}")
+    yorn = input("개별 조회를 하시겠습니까? y/n : \n").lower().strip()
+
+    if yorn == "n" :
+        response = requests.get(f"{base_url}/workout")
+        if response.status_code == 200:
+            print(f"모든 회원의 운동 정보를 열람합니다. {response.json().get('data')}")
+    else :      
+        ## 개인별 조회
+        user_id = str(input("어떤 회원님의 운동 기록 정보를 확인하시겠습니까? \n"))
+        response = requests.get(f"{base_url}/workout/{user_id}")
+        if response.status_code == 200:
+            print(f"{user_id} 회원님의 운동 정보를 열람합니다. {response.json().get('data')}")
+
 
 if __name__ == '__main__':
     server_url = 'http://127.0.0.1:8000'

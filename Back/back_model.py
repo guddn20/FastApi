@@ -40,6 +40,14 @@ async def record_daily(user_id:str, workout:WorkoutInfo):
 async def read_workout_record():
     return {'data' : all_workout}
 
+
+@app.get("/workout/{user_id}")
+async def read_workout_record(user_id:str):
+    workout_data = all_workout[user_id]
+    return {'message' : f'{user_id} 회원님의 운동 기록을 조회합니다.',
+            'data' : workout_data}
+
+
 # class PersonalInfo()
 # api 설계 -> 어떤 주소 app.get(주소1), app.post(주소2) -> 주소 정의
 # api 설계2 -> 어떤 데이터? app.get(주소1) : 개인정보
