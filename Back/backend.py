@@ -51,7 +51,6 @@ async def record_daily(user_id:str, workout:WorkoutInfo):
 async def read_workout_record():
     return {'data' : all_workout}
 
-
 @app.get("/workout/{user_id}")
 async def print_my_workout(user_id:str):
     #1. 이 회원이 등록되어있는 회원인가?

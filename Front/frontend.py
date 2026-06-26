@@ -61,13 +61,6 @@ def print_workout_record(base_url):
     response = requests.get(f"{base_url}/workout")
     if response.status_code == 200:
         print(f"모든 회원의 운동 정보를 열람합니다. {response.json().get('data')}")
-    # else :
-    #     ## 개인별 조회
-    #     user_id = str(input("어떤 회원님의 운동 기록 정보를 확인하시겠습니까? \n"))
-    #     response = requests.get(f"{base_url}/workout/{user_id}")
-    #     if response.status_code == 200:
-    #         print(f"{user_id} 회원님의 운동 정보를 열람합니다. {response.json().get('data')}")
-
 
 # 5. 운동정보조회(회원)
 def print_my_workout_record(base_url):
@@ -103,7 +96,7 @@ if __name__ == '__main__':
         print(" 3. 기록실 - 오늘의 상세 운동 등록 (POST)") 
         print(" 4. 기록실 - 전체 운동 기록 조회 (GET)") 
         print(" 5. 기록실 - 개인 운동 기록 조회 (GET)")
-        print(" 6. 시스템 종료 (exit)") 
+        print(" 6. 시스템 종료 (EXIT)") 
         print("========================================") 
 
         number = input("수행할 작업 번호를 선택하세요 : 1-6").strip()
