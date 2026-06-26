@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-# BaseModel : 서버로 들어오는 데이터의 유형 미리 정의
+# BaseModel : 서버로 들어오는 데이터의 유형 미리 정의 (자료형, 이름 등)
+# Field : 지정 시 구체적인 옵션
 from pydantic import BaseModel, Field
 
 app = FastAPI()
@@ -11,7 +12,7 @@ all_workout = {}
 # 서비스 에러가 줄어듬
 
 class HealthRecord(BaseModel):
-    user_id : str = Field(...) #필수(...)
+    user_id: str = Field(...)  # (...) : 필수데이터
     height : int
     weight : int
     workout : bool
@@ -22,6 +23,7 @@ class WorkoutInfo(BaseModel):
 
     wokind: str = Field(description='운동 종류를 의미함, 스쿼트, 헬스, 유산소 등..') # 운동종류(str)
     wocount: int  = Field(description='운동 횟수를 의미함. 얼마나 오랫동안 했는지') # 운동횟수(int)
+    #ge : 이상, gt : 초과, le : 이하, lt : 미만
     wointensity: int = Field(ge=1, le=10, description='얼마나 강한 운동했는지, 1에서 10까지로 직접 표현')  # 운동강도(1~10까지의int)
 
 # 함수 만들기

@@ -31,7 +31,7 @@ def print_personal_info(base_url):
     if response.status_code == 200:
         print(f"회원 정보를 열람합니다. {response.json().get('data')}")
 
-# 3. 운동정보등록
+# 3. 운동정보등록 -> + 개인의 운동 정보가 계속 쌓이도록
 def register_workout_record(base_url):
     print('회원님의 운동 정보 등록을 시작합니다.')
     # 어떤 유저가 기록했는지 알기 위해서 아이디를 물어봄
@@ -58,9 +58,9 @@ def register_workout_record(base_url):
 
 # 4. 운동정보조회(관리자)
 def print_workout_record(base_url):
-    yorn = input("개별 조회를 하시겠습니까? y/n : \n").lower().strip()
+    idv_view = input("개별 조회를 하시겠습니까? y/n : \n").lower().strip()
 
-    if yorn == "n" :
+    if idv_view == "n":
         response = requests.get(f"{base_url}/workout")
         if response.status_code == 200:
             print(f"모든 회원의 운동 정보를 열람합니다. {response.json().get('data')}")
