@@ -34,13 +34,15 @@ class WorkoutInfo(BaseModel):
 @app.post('/workout/{user_id}')
 async def record_daily(user_id:str, workout:WorkoutInfo):
     workout_data = workout.model_dump()
-    
-    #1. '회원 아이디'가 있는지 확인
-    #회원 기록 저장, 기록이 아예 없다면 새로운 기록 추가
-    #all_workout이라는 딕셔너리에 'user_id':[] 를 추가.
+
+    # 1. '회원 아이디'가 있는지 확인
+    # 회원 기록 저장, 기록이 아예 없다면 새로운 기록 추가
+    # all_workout이라는 딕셔너리에 'user_id':[] 를 추가.
     if user_id not in all_workout:
         all_workout[user_id] = []
-    
+
+    # all_workout[user_id] -> 딕셔너리에 user_id라는 '키'가 가진 '값'
+    # 값 : 비어있는 리스트.append(추가할 데이터 묶음)
     all_workout[user_id].append(workout)
     return {'message' : f'{user_id} 회원님의 운동 기록이 처리되었습니다.',
             'saved_data' : workout_data}
@@ -51,11 +53,17 @@ async def read_workout_record():
 
 
 @app.get("/workout/{user_id}")
-async def read_workout_record(user_id:str):
-    workout_data = all_workout[user_id]
-    return {'message' : f'{user_id} 회원님의 운동 기록을 조회합니다.',
-            'data' : workout_data}
-
+async def print_my_workout(user_id:str):
+    #1. 이 회원이 등록되어있는 회원인가?
+    if user_id in all_workout:
+    #2. 등록 회원이라면 기록을 반환
+        return {'user_id':user_id, 'data':all_workout[user_id]}
+    #3. 미등록 회원이라면 반환 불가 안내
+    else:
+        return { 'user_id' : user_id,
+                 'message' : '이 회원은 운동 기록이 존재하지 않습니다.',
+                 'data' : []
+                }
 
 # class PersonalInfo()
 # api 설계 -> 어떤 주소 app.get(주소1), app.post(주소2) -> 주소 정의

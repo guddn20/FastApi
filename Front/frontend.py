@@ -58,19 +58,37 @@ def register_workout_record(base_url):
 
 # 4. 운동정보조회(관리자)
 def print_workout_record(base_url):
-    idv_view = input("개별 조회를 하시겠습니까? y/n : \n").lower().strip()
+    response = requests.get(f"{base_url}/workout")
+    if response.status_code == 200:
+        print(f"모든 회원의 운동 정보를 열람합니다. {response.json().get('data')}")
+    # else :
+    #     ## 개인별 조회
+    #     user_id = str(input("어떤 회원님의 운동 기록 정보를 확인하시겠습니까? \n"))
+    #     response = requests.get(f"{base_url}/workout/{user_id}")
+    #     if response.status_code == 200:
+    #         print(f"{user_id} 회원님의 운동 정보를 열람합니다. {response.json().get('data')}")
 
-    if idv_view == "n":
-        response = requests.get(f"{base_url}/workout")
-        if response.status_code == 200:
-            print(f"모든 회원의 운동 정보를 열람합니다. {response.json().get('data')}")
-    else :      
-        ## 개인별 조회
-        user_id = str(input("어떤 회원님의 운동 기록 정보를 확인하시겠습니까? \n"))
-        response = requests.get(f"{base_url}/workout/{user_id}")
-        if response.status_code == 200:
-            print(f"{user_id} 회원님의 운동 정보를 열람합니다. {response.json().get('data')}")
 
+# 5. 운동정보조회(회원)
+def print_my_workout_record(base_url):
+    user_id = input('조회할 회원 아이디를 입력하세요. \n')
+    
+    #주소로 request 요청을 보냄
+    response = requests.get(f"{base_url}/workout/{user_id}")
+    
+    if response.status_code == 200:
+        result = response.json() # 서버에서 반환받은 데이터(result)
+
+        #기록이 없는 회원
+        if 'message' in result:
+            print(f'{result.get('message')}')
+        else:
+            print(f'{result.get('user_id')} 회원님의 운동 기록')
+            #result.get('data', []) => 'data'가 있으면 그대로 출력
+            #'data'라는 키가 없으면 빈 [] 출력
+            print(f'{result.get('data', [])}')
+    else:
+        print("에러 발생 : ", response.status_code)
 
 if __name__ == '__main__':
     server_url = 'http://127.0.0.1:8000'
@@ -83,13 +101,14 @@ if __name__ == '__main__':
         print(" 1. 대시보드 - 신체 정보 등록 (POST)") 
         print(" 2. 대시보드 - 전체 신체 정보 조회 (GET)") 
         print(" 3. 기록실 - 오늘의 상세 운동 등록 (POST)") 
-        print(" 4. 기록실 - 회원 운동 기록 조회 (GET)") 
-        print(" 5. 시스템 종료 (exit)") 
+        print(" 4. 기록실 - 전체 운동 기록 조회 (GET)") 
+        print(" 5. 기록실 - 개인 운동 기록 조회 (GET)")
+        print(" 6. 시스템 종료 (exit)") 
         print("========================================") 
 
-        number = input("수행할 작업 번호를 선택하세요 : 1-5").strip()
+        number = input("수행할 작업 번호를 선택하세요 : 1-6").strip()
 
-        #함수, 변수 명명규칙 -> 팀별, 회사별..
+        # 함수, 변수 명명규칙 -> 팀별, 회사별..
         if number == '1' :
             register_personal_info(server_url)
         elif number == '2' :
@@ -98,7 +117,9 @@ if __name__ == '__main__':
             register_workout_record(server_url)
         elif number == '4' :
             print_workout_record(server_url)
-        elif number == '5' :
+        elif number == "5":
+            print_my_workout_record(server_url)
+        elif number == '6' :
             print('시스템을 종료합니다. 좋은 하루 되세요 ^_^')
             break
         else:
